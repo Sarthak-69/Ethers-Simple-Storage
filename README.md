@@ -42,7 +42,7 @@ After setting the environment variables use
 node deploy.js
 ```
 
-**IMPORTANT**
+**IMPORTANT**  
 Don't use private key with real funds in it. Always use private key with test ether.
 
 # Thank You
