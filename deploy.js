@@ -1,11 +1,11 @@
-const ethers = require("ethers")
-const fs = require("fs-extra")
-require("dotenv").config()
+const ethers = require("ethers");
+const fs = require("fs-extra");
+require("dotenv").config();
 
 async function main() {
-  const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545")
+  const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   // Connecting to a wallet
-  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider)
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
 
   /*=======USING ENCRYPTED KEY========*/
   // const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8")
@@ -16,24 +16,25 @@ async function main() {
   // wallet = await wallet.connect(provider)
 
   //Reading abi & bin files
-  const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8")
-  const bin = fs.readFileSync("./SimpleSTorage_sol_SimpleStorage.bin", "utf8")
+  const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
+  const bin = fs.readFileSync("./SimpleSTorage_sol_SimpleStorage.bin", "utf8");
 
   /*=======Deploying a contract========*/
-  const contractFactory = new ethers.ContractFactory(abi, bin, wallet)
-  console.log("Deploying! Please wait")
-  const contract = await contractFactory.deploy()
+  const contractFactory = new ethers.ContractFactory(abi, bin, wallet);
+  console.log("Deploying! Please wait");
+  const contract = await contractFactory.deploy();
+  console.log(`Contract Address: ${contract.address}`);
 
   /*========DEPLOYING TRANSACTION TO GET TX. RECEIPT==========*/
-  await contract.deployTransaction.wait(1) // 1 -> 'Block Size'
+  await contract.deployTransaction.wait(1); // 1 -> 'Block Size'
 
   /*==========GET NUMBER===========*/
-  const currentFavNumber = await contract.retrieve()
-  console.log(`Current Favourite Number is: ${currentFavNumber.toString()}`) //JS Template Literals
-  const storedNum = await contract.store("7")
-  await storedNum.wait(1)
-  const updatedFavNumber = await contract.retrieve()
-  console.log(`Updated Favourite Number is: ${updatedFavNumber.toString()}`)
+  const currentFavNumber = await contract.retrieve();
+  console.log(`Current Favourite Number is: ${currentFavNumber.toString()}`); //JS Template Literals
+  const storedNum = await contract.store("7");
+  await storedNum.wait(1);
+  const updatedFavNumber = await contract.retrieve();
+  console.log(`Updated Favourite Number is: ${updatedFavNumber.toString()}`);
 
   // /*=======Deploying a contract using only transaction data========*/
   // const gasPrice = ethers.utils.hexlify(20000000000);
@@ -61,6 +62,6 @@ async function main() {
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })
+    console.error(error);
+    process.exit(1);
+  });
